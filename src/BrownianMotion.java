@@ -6,8 +6,8 @@ import interfaces.Grid;
 import interfaces.Parser;
 import interfaces.Particle;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,6 +15,16 @@ import java.util.Random;
 public class BrownianMotion {
 
     public static void main(String[] args) {
+
+        //CLEAR OVITO FILE BEFORE NEW SIMULATION
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter("outputOVITO.txt");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        writer.print("");
+        writer.close();
 
         generateInputFile(10);
 
@@ -78,6 +88,47 @@ public class BrownianMotion {
 
     }
 
+    public static void generateOvitoFile(Grid grid){
+        StringBuilder sb = new StringBuilder();
+        sb.append(grid.getParticles().size());
+        sb.append("\n");
+        sb.append("\n");
+
+        for (Particle p: grid.getParticles()){
+            sb.append(p.getX());
+            sb.append("\t");
+            sb.append(p.getY());
+            sb.append("\t");
+            sb.append(p.getR());
+            sb.append("\t");
+
+            if(p.getId() == 1) {
+                sb.append(255);
+                sb.append("\t");
+                sb.append(0);
+            }
+            else{
+                sb.append(0);
+                sb.append("\t");
+                sb.append(255);
+            }
+
+
+            sb.append("\n");
+        }
+
+        try {
+
+            // Open given file in append mode.
+            BufferedWriter out = new BufferedWriter(
+                    new FileWriter("outputOVITO.txt", true));
+            out.write(sb.toString());
+            out.close();
+        }
+        catch (IOException e) {
+            System.out.println("exception occoured" + e);
+        }
+    }
 
 
     private static Grid fillGrid(Parser parser){
@@ -88,7 +139,7 @@ public class BrownianMotion {
         Grid grid = new GridImpl(L, M, Rc);
         int xCellPosition = 0, yCellPosition = 0;
         int cellQuantity =  (int) (L/M) * (int)(L/M);
-        List<Cell> cellList = new ArrayList<Cell>();
+            List<Cell> cellList = new ArrayList<Cell>();
         Cell cell = new CellImpl(0, 0);
         cellList.add(cell);
 

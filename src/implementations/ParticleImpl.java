@@ -103,22 +103,22 @@ public class ParticleImpl implements Particle {
         double yCol;
 
         if(XVelocity > 0){
-            xCol = (wall - r - x0 ) / XVelocity;
+            xCol = (wall - r - x ) / XVelocity;
 
         }
         else if(XVelocity < 0){
-            xCol = (r - x0) / XVelocity;
+            xCol = (r - x) / XVelocity;
         }
         else{
             xCol = Double.POSITIVE_INFINITY;
         }
 
         if(YVelocity > 0){
-            yCol = (wall - r - x0 ) / YVelocity;
+            yCol = (wall - r - y ) / YVelocity;
 
         }
         else if(YVelocity < 0){
-            yCol =  (r - x0) / YVelocity;
+            yCol =  (r - y) / YVelocity;
         }
         else{
             yCol = Double.POSITIVE_INFINITY;
@@ -182,6 +182,12 @@ public class ParticleImpl implements Particle {
 
         other.setXVelocity(other.getXVelocity() - jx/other.getM());
         other.setYVelocity(other.getYVelocity() - jy/other.getM());
+
+    }
+
+    public void updatePosition(double t){
+        x = x + XVelocity*t;
+        y = y + YVelocity*t;
 
     }
 
