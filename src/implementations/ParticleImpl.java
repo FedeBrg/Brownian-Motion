@@ -1,4 +1,11 @@
-public class ParticleImpl implements Particle{
+package implementations;
+
+import interfaces.Particle;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ParticleImpl implements Particle {
     private double x;
     private double y;
     private double r;
@@ -8,13 +15,21 @@ public class ParticleImpl implements Particle{
 
     private double XVelocity;
     private double YVelocity;
+    private double mass;
+
     private int id;
 
-    public ParticleImpl(double x, double y, double r, int id) {
+    private List<Particle> neighbors;
+
+    public ParticleImpl(double x, double y, double r, double XVelocity, double YVelocity, double mass, int id) {
         this.x = x;
         this.y = y;
         this.r = r;
+        this.XVelocity = XVelocity;
+        this.YVelocity = YVelocity;
+        this.mass = mass;
         this.id = id;
+        this.neighbors = new ArrayList<>();
     }
 
     public double getXVelocity() {
@@ -23,6 +38,18 @@ public class ParticleImpl implements Particle{
 
     public double getYVelocity() {
         return YVelocity;
+    }
+
+    public double getMass() {
+        return mass;
+    }
+
+    public List<Particle> getNeighbors() {
+        return neighbors;
+    }
+
+    public void setNeighbors(List<Particle> neighbors) {
+        this.neighbors = neighbors;
     }
 
     @Override

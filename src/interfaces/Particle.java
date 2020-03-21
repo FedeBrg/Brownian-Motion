@@ -1,3 +1,6 @@
+package interfaces;
+
+import java.util.List;
 
 public interface Particle {
 
@@ -9,6 +12,9 @@ public interface Particle {
 
     double getXVelocity();
     double getYVelocity();
+
+    List<Particle> getNeighbors();
+    void setNeighbors(List<Particle> list);
 
     void setXVelocity(double XVelocity);
     void setYVelocity(double YVelocity);
