@@ -62,11 +62,11 @@ public class ParticleImpl implements Particle {
 
         double dist = calculateDistance(other);
 
-        return (dist-getR()-other.getR())<0;
+        return (dist)<0;
     }
 
     private double calculateDistance(Particle p) {
-        double toReturn = Math.sqrt(Math.pow(p.getX()-getX(),2) + Math.pow(p.getY()-getY(),2)) ;
+        double toReturn = Math.sqrt(Math.pow(p.getX()-getX(),2) + Math.pow(p.getY()-getY(),2)) -getR()-p.getR() ;
         return toReturn < 0 ? 0 : toReturn;
     }
 
@@ -147,17 +147,47 @@ public class ParticleImpl implements Particle {
             return Double.POSITIVE_INFINITY;
         }
         else{
-            return (dvdr - Math.sqrt(d))/dvdv;
+            return -(dvdr + Math.sqrt(d))/dvdv;
         }
     }
 
     public void velocityAfterWallCollision(double wall){
 
-        if(x>y){
-            XVelocity = -XVelocity;
+        if(x>=wall/2){
+            if(y>=wall/2){
+                if(x>y){
+                    XVelocity = - XVelocity;
+                }
+                else{
+                    YVelocity = -YVelocity;
+                }
+            }
+            else if(y<wall/2){
+                if (wall-x < y){
+                    XVelocity = -XVelocity;
+                }
+                else{
+                    YVelocity = -YVelocity;
+                }
+            }
         }
-        else{
-            YVelocity = -YVelocity;
+        else if(x<wall/2){
+            if(y>=wall/2){
+                if(x<wall-y){
+                    XVelocity = -XVelocity;
+                }
+                else{
+                    YVelocity = -YVelocity;
+                }
+            }
+            else if(y<wall/2){
+                if(x<y){
+                    XVelocity = -XVelocity;
+                }
+                else {
+                    YVelocity = -YVelocity;
+                }
+            }
         }
     }
 
@@ -177,11 +207,11 @@ public class ParticleImpl implements Particle {
         double jx = j*dx/sigma;
         double jy = j*dy/sigma;
 
-        XVelocity = XVelocity + jx/m;
-        YVelocity = YVelocity + jy/m;
+        XVelocity = XVelocity - jx/m;
+        YVelocity = YVelocity - jy/m;
 
-        other.setXVelocity(other.getXVelocity() - jx/other.getM());
-        other.setYVelocity(other.getYVelocity() - jy/other.getM());
+        other.setXVelocity(other.getXVelocity() + jx/other.getM());
+        other.setYVelocity(other.getYVelocity() + jy/other.getM());
 
     }
 

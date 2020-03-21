@@ -30,7 +30,7 @@ public class BrownianMotion {
         int N = 10;
         double L = 0.5;
         double rc = 0.01;
-        generateInputFile(10,L,rc);
+//        generateInputFile(10,L,rc);
 
         Parser parser = new ParserImpl();
         parser.parse();
@@ -39,9 +39,7 @@ public class BrownianMotion {
 
         Grid grid = fillGrid(parser);
 
-        for (Particle p:grid.getParticles()){
-            System.out.println(p.getR());
-        }
+        generateOvitoFile(grid);
 
 
         int FRAMES = 50;
@@ -73,7 +71,7 @@ public class BrownianMotion {
 
             //Vemos si choca contra otra particula
             for(Particle particle : grid.getParticles()){
-                for(Particle other : grid.getParticles()){
+                for(Particle other : particle.getNeighbors()){
                     if(particle.getId() != other.getId()){
                         calculatedCollision = particle.calculateParticleCollision(other);
                         if(nextCollisionTime > calculatedCollision){
@@ -86,16 +84,20 @@ public class BrownianMotion {
             }
 
             //Actualizamos las posiciones de las particulas involucradas dado este valor
+            for(Particle p : grid.getParticles()){
+                p.updatePosition(nextCollisionTime);
+            }
+
             if(p2 != null){
-                p1.updatePosition(nextCollisionTime);
-                p2.updatePosition(nextCollisionTime);
+
                 p1.velocityAfterParticleCollision(p2);
                 p2.velocityAfterParticleCollision(p1);
             }
             else{
-                p1.updatePosition(nextCollisionTime);
                 p1.velocityAfterWallCollision(parser.getL());
             }
+
+            generateOvitoFile(grid);
         }
 
     }
@@ -266,6 +268,10 @@ public class BrownianMotion {
 
     private static void getNeighbours2(Particle p, int x, int y, Grid grid) {
         int cellsPerRow = (int) (grid.getL()/grid.getM());
+
+        if(x<0 || x >= cellsPerRow || y<0 || y>= cellsPerRow){
+            return;
+        }
 
         if(y==cellsPerRow){
             y = 0;
