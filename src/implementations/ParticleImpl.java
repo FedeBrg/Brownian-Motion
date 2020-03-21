@@ -62,7 +62,7 @@ public class ParticleImpl implements Particle {
 
         double dist = calculateDistance(other);
 
-        return (dist)<0;
+        return (dist) == 0;
     }
 
     private double calculateDistance(Particle p) {

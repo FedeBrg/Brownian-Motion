@@ -29,8 +29,8 @@ public class BrownianMotion {
 
         int N = 10;
         double L = 0.5;
-        double rc = 0.01;
-//        generateInputFile(10,L,rc);
+        double rc = 0.1;
+        generateInputFile(10,L,rc);
 
         Parser parser = new ParserImpl();
         parser.parse();
@@ -89,13 +89,16 @@ public class BrownianMotion {
             }
 
             if(p2 != null){
+                System.out.printf("%d %d\n",p1.getId(),p2.getId());
 
                 p1.velocityAfterParticleCollision(p2);
-                p2.velocityAfterParticleCollision(p1);
+                //p2.velocityAfterParticleCollision(p1);
             }
             else{
                 p1.velocityAfterWallCollision(parser.getL());
             }
+            p1 = null;
+            p2 = null;
 
             generateOvitoFile(grid);
         }
