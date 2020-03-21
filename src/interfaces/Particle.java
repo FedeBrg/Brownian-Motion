@@ -21,4 +21,10 @@ public interface Particle {
 
     double getM();
 
+    double calculateWallCollision(double wall);
+    double calculateParticleCollision(Particle other);
+    void velocityAfterWallCollision(double wall);
+    void velocityAfterParticleCollision(Particle other);
+    void updatePosition(double t);
+
 }

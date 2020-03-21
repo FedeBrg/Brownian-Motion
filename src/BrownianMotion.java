@@ -1,5 +1,6 @@
 import implementations.CellImpl;
 import implementations.GridImpl;
+import implementations.ParserImpl;
 import implementations.ParticleImpl;
 import interfaces.Cell;
 import interfaces.Grid;
@@ -28,65 +29,124 @@ public class BrownianMotion {
 
         generateInputFile(10);
 
-    }
+        Parser parser = new ParserImpl();
+        parser.parse();
 
-    public static void generateInputFile(int N){
-        double L = 0.5;
+        Grid grid = fillGrid(parser);
 
-        Particle big = new ParticleImpl(L/2,L/2,0.05,0,0,100,1);
+        int FRAMES = 50;
+        double nextCollisionTime;
+        double calculatedCollision;
+        Particle p1 = null;
+        Particle p2 = null;
 
-        List<Particle> l = new ArrayList<>();
+        for(int i = 0; i < FRAMES; i++){
+            //Sacamos los vecinos previos
+            for(Particle particle : grid.getParticles()){
+                particle.getNeighbors().clear();
+            }
 
-        Random r = new Random();
+            //Calculamos vecinos
+            CIM(grid);
 
-        l.add(big);
-        int i = 2;
-        while(i<N+1){
-            double v = r.nextDouble()*0.1;
-            double angle = r.nextDouble()*2*Math.PI;
-            double vx = v*Math.cos(angle);
-            double vy = v*Math.sin(angle);
+            //Definimos el minimo tiempo de colisión
+            nextCollisionTime = Double.POSITIVE_INFINITY;
 
-            double x = r.nextDouble()*L;
-            double y = r.nextDouble()*L;
+            //Vemos si choca contra una pared
+            for(Particle particle : grid.getParticles()){
+                calculatedCollision = particle.calculateWallCollision(parser.getL());
+                if(nextCollisionTime > calculatedCollision){
+                    nextCollisionTime = calculatedCollision;
+                    p1 = particle;
+                }
+            }
 
-            Particle p = new ParticleImpl(x,y,0.005,vx,vy,0.1,i);
-            if (!l.contains(p)){
-                l.add(p);
-                i++;
+            //Vemos si choca contra otra particula
+            for(Particle particle : grid.getParticles()){
+                for(Particle other : grid.getParticles()){
+                    if(particle.getId() != other.getId()){
+                        calculatedCollision = particle.calculateParticleCollision(other);
+                        if(nextCollisionTime > calculatedCollision){
+                            nextCollisionTime = calculatedCollision;
+                            p1 = particle;
+                            p2 = other;
+                        }
+                    }
+                }
+            }
+
+            //Actualizamos las posiciones de las particulas involucradas dado este valor
+            if(p2 != null){
+                p1.updatePosition(nextCollisionTime);
+                p2.updatePosition(nextCollisionTime);
+                p1.velocityAfterParticleCollision(p2);
+                p2.velocityAfterParticleCollision(p1);
+            }
+            else{
+                p1.updatePosition(nextCollisionTime);
+                p1.velocityAfterWallCollision(parser.getL());
             }
         }
 
-        StringBuilder sb = new StringBuilder();
-
-        for (Particle p : l){
-            sb.append(p.getX());
-            sb.append("\t");
-            sb.append(p.getY());
-            sb.append("\t");
-            sb.append(p.getR());
-            sb.append("\t");
-            sb.append(p.getXVelocity());
-            sb.append("\t");
-            sb.append(p.getYVelocity());
-            sb.append("\t");
-            sb.append(p.getM());
-            sb.append("\t");
-            sb.append(p.getId());
-            sb.append("\n");
-        }
-
-        try {
-            FileWriter myWriter = new FileWriter("inputFile.txt");
-            myWriter.write(sb.toString());
-            myWriter.close();
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
-
-
     }
+
+        public static void generateInputFile(int N){
+            double L = 0.5;
+
+            Particle big = new ParticleImpl(L/2,L/2,0.05,0,0,100,1);
+
+            List<Particle> l = new ArrayList<>();
+
+            Random r = new Random();
+
+            l.add(big);
+            int i = 2;
+            while(i<N+1){
+                double v = r.nextDouble()*0.1;
+                double angle = r.nextDouble()*2*Math.PI;
+                double vx = v*Math.cos(angle);
+                double vy = v*Math.sin(angle);
+
+                double x = r.nextDouble()*L;
+                double y = r.nextDouble()*L;
+
+                Particle p = new ParticleImpl(x,y,0.005,vx,vy,0.1,i);
+                if (!l.contains(p)){
+                    l.add(p);
+                    i++;
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            for (Particle p : l){
+                sb.append(p.getX());
+                sb.append("\t");
+                sb.append(p.getY());
+                sb.append("\t");
+                sb.append(p.getR());
+                sb.append("\t");
+                sb.append(p.getXVelocity());
+                sb.append("\t");
+                sb.append(p.getYVelocity());
+                sb.append("\t");
+                sb.append(p.getM());
+                sb.append("\t");
+                sb.append(p.getId());
+                sb.append("\n");
+            }
+
+            try {
+                FileWriter myWriter = new FileWriter("inputFile.txt");
+                myWriter.write(sb.toString());
+                myWriter.close();
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+
+
+        }
 
     public static void generateOvitoFile(Grid grid){
         StringBuilder sb = new StringBuilder();
@@ -139,7 +199,7 @@ public class BrownianMotion {
         Grid grid = new GridImpl(L, M, Rc);
         int xCellPosition = 0, yCellPosition = 0;
         int cellQuantity =  (int) (L/M) * (int)(L/M);
-            List<Cell> cellList = new ArrayList<Cell>();
+        List<Cell> cellList = new ArrayList<Cell>();
         Cell cell = new CellImpl(0, 0);
         cellList.add(cell);
 

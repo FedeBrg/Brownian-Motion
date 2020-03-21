@@ -188,7 +188,6 @@ public class ParticleImpl implements Particle {
     public void updatePosition(double t){
         x = x + XVelocity*t;
         y = y + YVelocity*t;
-
     }
 
 }
