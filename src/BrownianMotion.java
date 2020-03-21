@@ -27,12 +27,22 @@ public class BrownianMotion {
         writer.print("");
         writer.close();
 
-        generateInputFile(10);
+        int N = 10;
+        double L = 0.5;
+        double rc = 0.01;
+        generateInputFile(10,L,rc);
 
         Parser parser = new ParserImpl();
         parser.parse();
 
+
+
         Grid grid = fillGrid(parser);
+
+        for (Particle p:grid.getParticles()){
+            System.out.println(p.getR());
+        }
+
 
         int FRAMES = 50;
         double nextCollisionTime;
@@ -90,14 +100,14 @@ public class BrownianMotion {
 
     }
 
-        public static void generateInputFile(int N){
-            double L = 0.5;
+        public static void generateInputFile(int N, double L, double rc){
 
             Particle big = new ParticleImpl(L/2,L/2,0.05,0,0,100,1);
 
             List<Particle> l = new ArrayList<>();
 
             Random r = new Random();
+
 
             l.add(big);
             int i = 2;
@@ -118,7 +128,13 @@ public class BrownianMotion {
             }
 
             StringBuilder sb = new StringBuilder();
+            sb.append(N);
+            sb.append("\n");
+            sb.append(L);
+            sb.append("\n");
+            sb.append(rc);
 
+            sb.append("\n");
             for (Particle p : l){
                 sb.append(p.getX());
                 sb.append("\t");
@@ -137,7 +153,7 @@ public class BrownianMotion {
             }
 
             try {
-                FileWriter myWriter = new FileWriter("inputFile.txt");
+                FileWriter myWriter = new FileWriter("input.txt");
                 myWriter.write(sb.toString());
                 myWriter.close();
             } catch (IOException e) {

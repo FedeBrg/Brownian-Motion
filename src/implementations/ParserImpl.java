@@ -58,18 +58,19 @@ public class ParserImpl implements Parser {
             File inputFile = new File("input.txt");
 
             Scanner inputReader = new Scanner(inputFile);
-
+//
             N = inputReader.nextInt();
             L = inputReader.nextDouble();
             Rc = inputReader.nextDouble();
-            Nu = inputReader.nextDouble();
+//            Nu = inputReader.nextDouble();
+
 
 
 
             int i = 0;
 
             while(inputReader.hasNext()){
-                Particle p = new ParticleImpl(inputReader.nextDouble(),inputReader.nextDouble(),inputReader.nextDouble(),inputReader.nextDouble(),inputReader.nextDouble(),inputReader.nextDouble(),i);
+                Particle p = new ParticleImpl(inputReader.nextDouble(),inputReader.nextDouble(),inputReader.nextDouble(),inputReader.nextDouble(),inputReader.nextDouble(),inputReader.nextDouble(),inputReader.nextInt());
                 particles.add(p);
                 i++;
             }
