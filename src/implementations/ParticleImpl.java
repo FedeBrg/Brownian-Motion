@@ -15,7 +15,6 @@ public class ParticleImpl implements Particle {
 
     private double XVelocity;
     private double YVelocity;
-    private double mass;
 
     private int id;
 
@@ -27,7 +26,7 @@ public class ParticleImpl implements Particle {
         this.r = r;
         this.XVelocity = XVelocity;
         this.YVelocity = YVelocity;
-        this.mass = mass;
+        this.m = mass;
         this.id = id;
         this.neighbors = new ArrayList<>();
     }
@@ -40,9 +39,6 @@ public class ParticleImpl implements Particle {
         return YVelocity;
     }
 
-    public double getMass() {
-        return mass;
-    }
 
     public List<Particle> getNeighbors() {
         return neighbors;

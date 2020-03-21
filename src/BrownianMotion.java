@@ -6,20 +6,79 @@ import interfaces.Grid;
 import interfaces.Parser;
 import interfaces.Particle;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class BrownianMotion {
 
     public static void main(String[] args) {
-        Particle p = new ParticleImpl(0,0,1,0.5, 0.5, 0.5, 0);
-        Particle p1 = new ParticleImpl(0,10,1,0.25, 0.25, 0.7, 1);
+
+        generateInputFile(10);
+
+    }
+
+    public static void generateInputFile(int N){
+        double L = 0.5;
+
+        Particle big = new ParticleImpl(L/2,L/2,0.05,0,0,100,1);
 
         List<Particle> l = new ArrayList<>();
 
-        l.add(p);
-        System.out.println(Math.min(1,Double.POSITIVE_INFINITY));
+        Random r = new Random();
+
+        l.add(big);
+        int i = 2;
+        while(i<N+1){
+            double v = r.nextDouble()*0.1;
+            double angle = r.nextDouble()*2*Math.PI;
+            double vx = v*Math.cos(angle);
+            double vy = v*Math.sin(angle);
+
+            double x = r.nextDouble()*L;
+            double y = r.nextDouble()*L;
+
+            Particle p = new ParticleImpl(x,y,0.005,vx,vy,0.1,i);
+            if (!l.contains(p)){
+                l.add(p);
+                i++;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Particle p : l){
+            sb.append(p.getX());
+            sb.append("\t");
+            sb.append(p.getY());
+            sb.append("\t");
+            sb.append(p.getR());
+            sb.append("\t");
+            sb.append(p.getXVelocity());
+            sb.append("\t");
+            sb.append(p.getYVelocity());
+            sb.append("\t");
+            sb.append(p.getM());
+            sb.append("\t");
+            sb.append(p.getId());
+            sb.append("\n");
+        }
+
+        try {
+            FileWriter myWriter = new FileWriter("inputFile.txt");
+            myWriter.write(sb.toString());
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+
     }
+
+
 
     private static Grid fillGrid(Parser parser){
         double L = parser.getL();
