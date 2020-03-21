@@ -10,4 +10,9 @@ public interface Particle {
     double getXVelocity();
     double getYVelocity();
 
+    void setXVelocity(double XVelocity);
+    void setYVelocity(double YVelocity);
+
+    double getM();
+
 }

@@ -4,6 +4,7 @@ public class ParticleImpl implements Particle{
     private double r;
     private double x0;
     private double y0;
+    private double m;
 
     private double XVelocity;
     private double YVelocity;
@@ -62,6 +63,17 @@ public class ParticleImpl implements Particle{
         return id;
     }
 
+    public double getM() {
+        return m;
+    }
+
+    public void setXVelocity(double XVelocity) {
+        this.XVelocity = XVelocity;
+    }
+
+    public void setYVelocity(double YVelocity) {
+        this.YVelocity = YVelocity;
+    }
 
     public double calculateWallCollision(double wall){
         double xCol;
@@ -115,4 +127,39 @@ public class ParticleImpl implements Particle{
             return (dvdr - Math.sqrt(d))/dvdv;
         }
     }
+
+    public void velocityAfterWallCollision(double wall){
+
+        if(x>y){
+            XVelocity = -XVelocity;
+        }
+        else{
+            YVelocity = -YVelocity;
+        }
+    }
+
+    public void velocityAfterParticleCollision(Particle other){
+        double dx = x - other.getX();
+        double dy = y - other.getY();
+
+        double dvx = XVelocity - other.getXVelocity();
+        double dvy = YVelocity - other.getYVelocity();
+        double dvdr = dvx*dx + dvy*dy;
+
+        double sigma = r+other.getR();
+
+
+        double j = (2*m*other.getM()*dvdr)/(sigma*(m+other.getM()));
+
+        double jx = j*dx/sigma;
+        double jy = j*dy/sigma;
+
+        XVelocity = XVelocity + jx/m;
+        YVelocity = YVelocity + jy/m;
+
+        other.setXVelocity(other.getXVelocity() - jx/other.getM());
+        other.setYVelocity(other.getYVelocity() - jy/other.getM());
+
+    }
+
 }
