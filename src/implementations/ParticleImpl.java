@@ -128,20 +128,23 @@ public class ParticleImpl implements Particle {
     }
 
     public double calculateParticleCollision(Particle other){
-        double dx = x - other.getX();
-        double dy = y - other.getY();
+        double dx = other.getX() - x;
+        double dy = other.getY() - y;
 
-        double dvx = XVelocity - other.getXVelocity();
-        double dvy = YVelocity - other.getYVelocity();
+        double dvx = other.getXVelocity() - XVelocity;
+        double dvy = other.getYVelocity() - YVelocity;
 
         double dvdv = dvx*dvx + dvy*dvy;
         double drdr = dx*dx + dy*dy;
         double dvdr = dvx*dx + dvy*dy;
         double sigma = r+other.getR();
-        double d = dvdr*dvdr - ( (dvdv)*(drdr - sigma*sigma));
+        double d = (dvdr*dvdr) - ( (dvdv)*(drdr - sigma*sigma));
 
-        if(dvdr >= 0){
+        if(dvdr > 0){
             return Double.POSITIVE_INFINITY;
+        }
+        else if(dvdv == 0){
+            return  Double.POSITIVE_INFINITY;
         }
         else if( d <0){
             return Double.POSITIVE_INFINITY;
@@ -192,11 +195,12 @@ public class ParticleImpl implements Particle {
     }
 
     public void velocityAfterParticleCollision(Particle other){
-        double dx = x - other.getX();
-        double dy = y - other.getY();
 
-        double dvx = XVelocity - other.getXVelocity();
-        double dvy = YVelocity - other.getYVelocity();
+        double dx = other.getX() - x;
+        double dy = other.getY() - y;
+
+        double dvx =  other.getXVelocity() - XVelocity;
+        double dvy =  other.getYVelocity() - YVelocity;
         double dvdr = dvx*dx + dvy*dy;
 
         double sigma = r+other.getR();
@@ -207,11 +211,11 @@ public class ParticleImpl implements Particle {
         double jx = j*dx/sigma;
         double jy = j*dy/sigma;
 
-        XVelocity = XVelocity - jx/m;
-        YVelocity = YVelocity - jy/m;
+        XVelocity +=  jx/m;
+        YVelocity +=  jy/m;
 
-        other.setXVelocity(other.getXVelocity() + jx/other.getM());
-        other.setYVelocity(other.getYVelocity() + jy/other.getM());
+        other.setXVelocity(other.getXVelocity() - jx/other.getM());
+        other.setYVelocity(other.getYVelocity() - jy/other.getM());
 
     }
 

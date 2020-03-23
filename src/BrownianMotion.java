@@ -30,7 +30,7 @@ public class BrownianMotion {
         int N = 10;
         double L = 0.5;
         double rc = 0.1;
-        generateInputFile(10,L,rc);
+        generateInputFile(100,L,rc);
 
         Parser parser = new ParserImpl();
         parser.parse();
@@ -38,6 +38,7 @@ public class BrownianMotion {
 
 
         Grid grid = fillGrid(parser);
+
 
         generateOvitoFile(grid);
 
@@ -71,7 +72,7 @@ public class BrownianMotion {
 
             //Vemos si choca contra otra particula
             for(Particle particle : grid.getParticles()){
-                for(Particle other : particle.getNeighbors()){
+                for(Particle other : grid.getParticles()){
                     if(particle.getId() != other.getId()){
                         calculatedCollision = particle.calculateParticleCollision(other);
                         if(nextCollisionTime > calculatedCollision){
