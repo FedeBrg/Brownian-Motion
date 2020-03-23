@@ -41,7 +41,7 @@ public class BrownianMotion {
         generateOvitoFile(grid);
 
 
-        int FRAMES = 50;
+        int FRAMES = 500;
         double nextCollisionTime;
         double calculatedCollision;
         boolean isVerticalWall = false;
@@ -122,7 +122,8 @@ public class BrownianMotion {
             List<Particle> l = new ArrayList<>();
 
             Random r = new Random();
-
+            double max = L-0.005;
+            double min = 0.005;
 
             l.add(big);
             int i = 2;
@@ -132,8 +133,11 @@ public class BrownianMotion {
                 double vx = v*Math.cos(angle);
                 double vy = v*Math.sin(angle);
 
-                double x = r.nextDouble()*L;
-                double y = r.nextDouble()*L;
+                double x = min + (max - min) * r.nextDouble();
+                double y = min + (max - min) * r.nextDouble();
+
+//                double x = r.nextDouble()*L;
+//                double y = r.nextDouble()*L;
 
                 Particle p = new ParticleImpl(x,y,0.005,vx,vy,0.1,i);
                 if (!l.contains(p)){
