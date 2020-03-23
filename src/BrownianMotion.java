@@ -16,7 +16,6 @@ import java.util.Random;
 public class BrownianMotion {
 
     public static void main(String[] args) {
-
         //CLEAR OVITO FILE BEFORE NEW SIMULATION
         PrintWriter writer = null;
         try {
@@ -27,10 +26,10 @@ public class BrownianMotion {
         writer.print("");
         writer.close();
 
-        int N = 10;
+        int N = 100;
         double L = 0.5;
         double rc = 0.1;
-        generateInputFile(100,L,rc);
+        generateInputFile(N,L,rc);
 
         Parser parser = new ParserImpl();
         parser.parse();
@@ -39,13 +38,13 @@ public class BrownianMotion {
 
         Grid grid = fillGrid(parser);
 
-
         generateOvitoFile(grid);
 
 
         int FRAMES = 50;
         double nextCollisionTime;
         double calculatedCollision;
+        boolean isVerticalWall = false;
         Particle p1 = null;
         Particle p2 = null;
 
@@ -63,9 +62,17 @@ public class BrownianMotion {
 
             //Vemos si choca contra una pared
             for(Particle particle : grid.getParticles()){
-                calculatedCollision = particle.calculateWallCollision(parser.getL());
+                calculatedCollision = particle.calculateHorizontalWallCollision(parser.getL());
                 if(nextCollisionTime > calculatedCollision){
                     nextCollisionTime = calculatedCollision;
+                    isVerticalWall = false;
+                    p1 = particle;
+                }
+
+                calculatedCollision = particle.calculateVerticalWallCollision(parser.getL());
+                if(nextCollisionTime > calculatedCollision){
+                    nextCollisionTime = calculatedCollision;
+                    isVerticalWall = true;
                     p1 = particle;
                 }
             }
@@ -90,16 +97,18 @@ public class BrownianMotion {
             }
 
             if(p2 != null){
-//                System.out.printf("%d %d\n",p1.getId(),p2.getId());
-
                 p1.velocityAfterParticleCollision(p2);
-                //p2.velocityAfterParticleCollision(p1);
+            }
+            else if(isVerticalWall){
+                p1.velocityAfterVerticalWallCollision();
             }
             else{
-                p1.velocityAfterWallCollision(parser.getL());
+                p1.velocityAfterHorizontalWallCollision();
             }
+
             p1 = null;
             p2 = null;
+            isVerticalWall = false;
 
             generateOvitoFile(grid);
         }

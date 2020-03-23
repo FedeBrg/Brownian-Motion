@@ -66,7 +66,7 @@ public class ParticleImpl implements Particle {
     }
 
     private double calculateDistance(Particle p) {
-        double toReturn = Math.sqrt(Math.pow(p.getX()-getX(),2) + Math.pow(p.getY()-getY(),2)) -getR()-p.getR() ;
+        double toReturn = Math.sqrt(Math.pow(p.getX()-getX(),2) + Math.pow(p.getY()-getY(),2)) - getR() - p.getR() ;
         return toReturn < 0 ? 0 : toReturn;
     }
 
