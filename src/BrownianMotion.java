@@ -90,7 +90,7 @@ public class BrownianMotion {
             }
 
             if(p2 != null){
-                System.out.printf("%d %d\n",p1.getId(),p2.getId());
+//                System.out.printf("%d %d\n",p1.getId(),p2.getId());
 
                 p1.velocityAfterParticleCollision(p2);
                 //p2.velocityAfterParticleCollision(p1);

@@ -98,6 +98,44 @@ public class ParticleImpl implements Particle {
         this.YVelocity = YVelocity;
     }
 
+    public double calculateVerticalWallCollision(double wall){
+        double xCol;
+        if(XVelocity > 0){
+            xCol = (wall - r - x ) / XVelocity;
+
+        }
+        else if(XVelocity < 0){
+            xCol = (r - x) / XVelocity;
+        }
+        else{
+            xCol = Double.POSITIVE_INFINITY;
+        }
+
+        return xCol;
+    }
+
+    public double calculateHorizontalWallCollision(double wall){
+        double yCol;
+        if(YVelocity > 0){
+            yCol = (wall - r - y ) / YVelocity;
+        }
+        else if(YVelocity < 0){
+            yCol =  (r - y) / YVelocity;
+        }
+        else{
+            yCol = Double.POSITIVE_INFINITY;
+        }
+        return yCol;
+    }
+
+    public void velocityAfterHorizontalWallCollision(){
+        YVelocity = - YVelocity;
+    }
+
+    public void velocityAfterVerticalWallCollision(){
+        XVelocity = - XVelocity;
+    }
+
     public double calculateWallCollision(double wall){
         double xCol;
         double yCol;
