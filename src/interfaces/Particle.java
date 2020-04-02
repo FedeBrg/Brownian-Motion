@@ -30,4 +30,7 @@ public interface Particle {
     void velocityAfterHorizontalWallCollision();
     double calculateHorizontalWallCollision(double wall);
     double calculateVerticalWallCollision(double wall);
+
+    double getKE();
+
 }

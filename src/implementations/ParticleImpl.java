@@ -40,6 +40,8 @@ public class ParticleImpl implements Particle {
     }
 
 
+
+
     public List<Particle> getNeighbors() {
         return neighbors;
     }
@@ -112,6 +114,14 @@ public class ParticleImpl implements Particle {
         }
 
         return xCol;
+    }
+
+    @Override
+    public double getKE() {
+        double v = Math.sqrt((XVelocity*XVelocity) + (YVelocity*YVelocity));
+
+        return (v*v*m)/2;
+
     }
 
     public double calculateHorizontalWallCollision(double wall){

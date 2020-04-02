@@ -25,99 +25,149 @@ public class BrownianMotion {
         }
         writer.print("");
         writer.close();
+        //for(int j = 0; j<50;j++) {
 
-        int N = 100;
+        int N = 50;
         double L = 0.5;
         double rc = 0.1;
-        generateInputFile(N,L,rc);
+        double vmax = 0.5;
+        generateInputFile(N,L,rc,vmax);
+
+
+        boolean startCounting = false;
 
         Parser parser = new ParserImpl();
         parser.parse();
+        double KE = 0;
+        Particle bigone = new ParticleImpl(0,0,0,0,0,0,0);
+        for (Particle particle : parser.getParticles()){
+            KE += particle.getKE();
+            if(particle.getId() == 1){
+                bigone=particle;
+            }
+        }
 
+        double x0 = bigone.getX();
+        double y0 = bigone.getY();
+        int col = 0;
 
+        double k = 1.38066e-23;
+        //System.out.printf("System temperature: %f\n",(KE*2)/(3*k*parser.getParticles().size()));
 
         Grid grid = fillGrid(parser);
 
         generateOvitoFile(grid);
 
 
-        int FRAMES = 500;
+        int FRAMES = 10000;
         double nextCollisionTime;
         double calculatedCollision;
         boolean isVerticalWall = false;
         Particle p1 = null;
         Particle p2 = null;
 
-        for(int i = 0; i < FRAMES; i++){
-            //Sacamos los vecinos previos
-            for(Particle particle : grid.getParticles()){
-                particle.getNeighbors().clear();
-            }
+        double time = 0;
+        double oldtime = 0;
+        int collisions = 0;
 
-            //Calculamos vecinos
-            CIM(grid);
-
-            //Definimos el minimo tiempo de colisión
-            nextCollisionTime = Double.POSITIVE_INFINITY;
-
-            //Vemos si choca contra una pared
-            for(Particle particle : grid.getParticles()){
-                calculatedCollision = particle.calculateHorizontalWallCollision(parser.getL());
-                if(nextCollisionTime > calculatedCollision){
-                    nextCollisionTime = calculatedCollision;
-                    isVerticalWall = false;
-                    p1 = particle;
+            while(true){
+           // for (int i = 0; i < FRAMES; i++) {
+                //Sacamos los vecinos previos
+                for (Particle particle : grid.getParticles()) {
+                    particle.getNeighbors().clear();
                 }
 
-                calculatedCollision = particle.calculateVerticalWallCollision(parser.getL());
-                if(nextCollisionTime > calculatedCollision){
-                    nextCollisionTime = calculatedCollision;
-                    isVerticalWall = true;
-                    p1 = particle;
-                }
-            }
+                //Calculamos vecinos
+                CIM(grid);
 
-            //Vemos si choca contra otra particula
-            for(Particle particle : grid.getParticles()){
-                for(Particle other : grid.getParticles()){
-                    if(particle.getId() != other.getId()){
-                        calculatedCollision = particle.calculateParticleCollision(other);
-                        if(nextCollisionTime > calculatedCollision){
-                            nextCollisionTime = calculatedCollision;
-                            p1 = particle;
-                            p2 = other;
+                //Definimos el minimo tiempo de colisión
+                nextCollisionTime = Double.POSITIVE_INFINITY;
+
+                //Vemos si choca contra una pared
+                for (Particle particle : grid.getParticles()) {
+                    calculatedCollision = particle.calculateHorizontalWallCollision(parser.getL());
+                    if (nextCollisionTime > calculatedCollision) {
+                        nextCollisionTime = calculatedCollision;
+                        isVerticalWall = false;
+                        p1 = particle;
+                    }
+
+                    calculatedCollision = particle.calculateVerticalWallCollision(parser.getL());
+                    if (nextCollisionTime > calculatedCollision) {
+                        nextCollisionTime = calculatedCollision;
+                        isVerticalWall = true;
+                        p1 = particle;
+                    }
+                }
+
+                //Vemos si choca contra otra particula
+                for (Particle particle : grid.getParticles()) {
+                    for (Particle other : grid.getParticles()) {
+                        if (particle.getId() != other.getId()) {
+                            calculatedCollision = particle.calculateParticleCollision(other);
+                            if (nextCollisionTime > calculatedCollision) {
+                                nextCollisionTime = calculatedCollision;
+                                p1 = particle;
+                                p2 = other;
+                            }
                         }
                     }
                 }
-            }
 
-            //Actualizamos las posiciones de las particulas involucradas dado este valor
-            for(Particle p : grid.getParticles()){
-                p.updatePosition(nextCollisionTime);
-            }
+                //Actualizamos las posiciones de las particulas involucradas dado este valor
+                for (Particle p : grid.getParticles()) {
+                    p.updatePosition(nextCollisionTime);
+                    if (!p.equals(p1) && !p.equals(p2)) {
+                    }
+                }
 
-            if(p2 != null){
-                p1.velocityAfterParticleCollision(p2);
-            }
-            else if(isVerticalWall){
-                p1.velocityAfterVerticalWallCollision();
-            }
-            else{
-                p1.velocityAfterHorizontalWallCollision();
-            }
+                time += nextCollisionTime;
 
-            p1 = null;
-            p2 = null;
-            isVerticalWall = false;
 
-            generateOvitoFile(grid);
+//                System.out.println(time-oldtime);
+                oldtime=time;
+
+//                if(time>oldtime+0.1 ){
+////                    System.out.printf("%f\t%f\n",time,Math.sqrt(Math.pow(x0-bigone.getX(),2)+Math.pow(y0-bigone.getY(),2)));
+////                    System.out.printf("%f\t%f\n",bigone.getX(),bigone.getY());
+//
+//                    oldtime = time;
+//                }
+                col++;
+
+                if (p2 != null) {
+                    p1.velocityAfterParticleCollision(p2);
+                } else if (isVerticalWall) {
+                    p1.velocityAfterVerticalWallCollision();
+                    if(p1.getId() == 1)
+                    {
+                        break;
+                    }
+                } else {
+                    p1.velocityAfterHorizontalWallCollision();
+                    if(p1.getId() == 1)
+                    {
+                        break;
+                    }
+                }
+
+
+                p1 = null;
+                p2 = null;
+                isVerticalWall = false;
+
+                generateOvitoFile(grid);
+            }
+        //System.out.printf("%f\t%d",time,col);
+
+
         }
 
-    }
+   // }
 
-        public static void generateInputFile(int N, double L, double rc){
+        public static void generateInputFile(int N, double L, double rc,double vmax){
 
-            Particle big = new ParticleImpl(L/2,L/2,0.05,0,0,100,1);
+            Particle big = new ParticleImpl(L/2,L/2,0.05,0,0,0.1,1);
 
             List<Particle> l = new ArrayList<>();
 
@@ -128,7 +178,7 @@ public class BrownianMotion {
             l.add(big);
             int i = 2;
             while(i<N+1){
-                double v = r.nextDouble()*0.1;
+                double v = r.nextDouble()*vmax;
                 double angle = r.nextDouble()*2*Math.PI;
                 double vx = v*Math.cos(angle);
                 double vy = v*Math.sin(angle);
@@ -139,7 +189,7 @@ public class BrownianMotion {
 //                double x = r.nextDouble()*L;
 //                double y = r.nextDouble()*L;
 
-                Particle p = new ParticleImpl(x,y,0.005,vx,vy,0.1,i);
+                Particle p = new ParticleImpl(x,y,0.005,vx,vy,0.0001,i);
                 if (!l.contains(p)){
                     l.add(p);
                     i++;
